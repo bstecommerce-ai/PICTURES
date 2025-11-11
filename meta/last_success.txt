@@ -1,0 +1,3 @@
+2025-11-11 OK
+permalink=https://www.instagram.com/p/DQ6sfh-DrtK/
+image=https://raw.githubusercontent.com/bstecommerce-ai/PICTURES/bot/public/rendered/2025/11/post_2025-11-11.jpg
