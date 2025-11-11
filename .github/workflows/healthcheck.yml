@@ -1,0 +1,32 @@
+name: Healthcheck
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch last_success
+        id: fetch
+        run: |
+          set -e
+          URL="https://raw.githubusercontent.com/${{ github.repository }}/bot/meta/last_success.txt"
+          HTTP=$(curl -s -o last_success.txt -w "%{http_code}" -L "$URL")
+          echo "http=$HTTP" >> $GITHUB_OUTPUT
+          if [ "$HTTP" != "200" ]; then
+            echo "No last_success.txt on bot branch" >&2
+            exit 1
+          fi
+      - name: Staleness check
+        run: |
+          TS=$(date -u -r last_success.txt +%s || date -u +%s)
+          NOW=$(date -u +%s)
+          AGE=$(( (NOW - TS) / 3600 ))
+          echo "AGE_HOURS=$AGE"
+          if [ $AGE -gt 36 ]; then
+            echo "Healthcheck failed: last success ${AGE}h ago"
+            exit 1
+          fi
